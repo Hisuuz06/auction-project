@@ -104,6 +104,7 @@ public class AuctionService {
         auctions.deleteById(auctionId);
     }
 
+
     public List<Auction> listWonBy(long userId) {
         return auctions.findEndedWonBy(userId, clock.instant());
     }
