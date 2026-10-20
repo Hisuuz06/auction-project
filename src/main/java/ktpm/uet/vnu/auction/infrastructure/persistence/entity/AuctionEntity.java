@@ -35,7 +35,7 @@ public class AuctionEntity {
     @Column(nullable = false)
     private Instant endTime;
 
-    protected AuctionEntity() {
+    public AuctionEntity() {
     }
 
     public Long getId() {
