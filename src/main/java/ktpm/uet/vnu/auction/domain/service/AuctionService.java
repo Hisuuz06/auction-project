@@ -10,7 +10,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.List;
 
-/** Quản lý phiên đấu giá. Chủ sở hữu: TV2. Java thuần. */
+
 public class AuctionService {
 
     private final AuctionRepository auctions;
@@ -20,8 +20,6 @@ public class AuctionService {
         this.auctions = auctions;
         this.clock = clock;
     }
-
-    // ---- Hai hàm mẫu đã làm sẵn, để cả nhóm theo cùng phong cách ----
 
     /** GET /api/auctions */
     public List<Auction> list() {
@@ -40,12 +38,32 @@ public class AuctionService {
         return auction.status(clock.instant());
     }
 
-    // ---- Phần việc của TV2 ----
-
     /** POST /api/auctions. BR-2: endTime phải ở tương lai (VALIDATION_ERROR). */
     public Auction create(long sellerId, String name, String description,
                           long startingPrice, long minIncrement, Instant endTime) {
-        throw new UnsupportedOperationException("TODO TV2: create");
+
+        Instant now = clock.instant();
+
+        // Kiểm tra thời gian kết thúc phải ở tương lai
+        if (endTime == null || !endTime.isAfter(now)) {
+            throw new DomainException(
+                    ErrorCode.VALIDATION_ERROR,
+                    "Thời gian kết thúc phải lớn hơn thời gian hiện tại"
+            );
+        }
+
+        // Tạo đối tượng Auction
+        Auction auction = Auction.create(
+                sellerId,
+                name,
+                description,
+                startingPrice,
+                minIncrement,
+                endTime
+        );
+
+        // Lưu phiên đấu giá vào database thông qua Repository
+        return auctions.save(auction);
     }
 
     /**
@@ -54,11 +72,40 @@ public class AuctionService {
      * đã có bid (auction.hasBids()): AUCTION_HAS_BIDS.
      */
     public void delete(long requesterId, long auctionId) {
-        throw new UnsupportedOperationException("TODO TV2: delete");
+
+        // 1. Tìm phiên đấu giá
+        Auction auction = get(auctionId);
+
+        // 2. Kiểm tra quyền sở hữu
+        if (!auction.getSellerId().equals(requesterId)) {
+            throw new DomainException(
+                    ErrorCode.FORBIDDEN,
+                    "Bạn không có quyền xóa phiên đấu giá này"
+            );
+        }
+
+        // 3. Kiểm tra phiên đã kết thúc chưa
+        if (auction.isEnded(clock.instant())) {
+            throw new DomainException(
+                    ErrorCode.VALIDATION_ERROR,
+                    "Không thể xóa phiên đấu giá đã kết thúc"
+            );
+        }
+
+        // 4. Kiểm tra phiên đã có người đặt giá chưa
+        if (auction.hasBids()) {
+            throw new DomainException(
+                    ErrorCode.AUCTION_HAS_BIDS,
+                    "Không thể xóa phiên đấu giá đã có người đặt giá"
+            );
+        }
+
+        // 5. Xóa phiên khỏi database
+        auctions.deleteById(auctionId);
     }
 
-    /** GET /api/users/me/won-auctions (BR-8). Dùng auctions.findEndedWonBy(userId, clock.instant()). */
+
     public List<Auction> listWonBy(long userId) {
-        throw new UnsupportedOperationException("TODO TV2: listWonBy");
+        return auctions.findEndedWonBy(userId, clock.instant());
     }
 }
