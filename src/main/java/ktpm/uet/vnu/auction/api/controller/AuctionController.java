@@ -3,6 +3,7 @@ import ktpm.uet.vnu.auction.domain.model.Auction;
 import ktpm.uet.vnu.auction.domain.service.AuctionService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.time.Instant;
 import java.util.List;
 import ktpm.uet.vnu.auction.api.dto.CreateAuctionRequest;
@@ -44,6 +45,7 @@ public class AuctionController {
     }
 
     // POST/api/auctions
+    @SecurityRequirement(name = "bearerAuth")
     @PostMapping
     public ResponseEntity<AuctionResponse> create(
             @Valid @RequestBody CreateAuctionRequest request,
@@ -63,6 +65,7 @@ public class AuctionController {
                 .body(toResponse(auction));
     }
     // DELETE/api/auctions/{id}
+    @SecurityRequirement(name = "bearerAuth")
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(
             @PathVariable long id,
