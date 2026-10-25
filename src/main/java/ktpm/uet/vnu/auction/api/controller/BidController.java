@@ -1,6 +1,9 @@
 package ktpm.uet.vnu.auction.api.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -37,6 +40,14 @@ public class BidController {
 
     @PostMapping
     @Operation(summary = "Đặt giá cho một phiên (cần đăng nhập)")
+    @SecurityRequirement(name = "bearerAuth")
+    @ApiResponses({
+            @ApiResponse(responseCode = "201", description = "Đặt giá thành công"),
+            @ApiResponse(responseCode = "401", description = "Thiếu hoặc sai token (UNAUTHORIZED)"),
+            @ApiResponse(responseCode = "403", description = "Người bán đặt giá phiên của mình (SELLER_CANNOT_BID)"),
+            @ApiResponse(responseCode = "404", description = "Không có phiên (AUCTION_NOT_FOUND)"),
+            @ApiResponse(responseCode = "409", description = "Phiên đã kết thúc (AUCTION_ENDED) hoặc giá quá thấp (BID_TOO_LOW)")
+    })
     public ResponseEntity<BidResponse> place(@PathVariable long auctionId,
                                              @Valid @RequestBody PlaceBidRequest body,
                                              HttpServletRequest request) {

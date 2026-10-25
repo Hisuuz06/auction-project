@@ -16,8 +16,7 @@ import java.time.ZoneOffset;
 import java.util.*;
 import java.util.function.Supplier;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class BidServiceTest {
     private static final Instant END = Instant.parse("2026-11-01T10:00:00Z");
@@ -65,6 +64,44 @@ class BidServiceTest {
     void auctionNotFound() {
         service.placeBid(5L, 7L, 500_000);
         DomainException ex = assertThrows(DomainException.class, () -> service.placeBid(6L, 99L, 500_000));
+        assertEquals(ErrorCode.AUCTION_NOT_FOUND, ex.getCode());
+    }
+
+    @Test
+    void unknownAuctionIsRejected() {
+        DomainException ex = assertThrows(DomainException.class,
+                () -> service.placeBid(5L, 99L, 500_000));
+        assertEquals(ErrorCode.AUCTION_NOT_FOUND, ex.getCode());
+    }
+
+    @Test
+    void sellerCannotBidOnOwnAuction() {
+        DomainException ex = assertThrows(DomainException.class,
+                () -> service.placeBid(1L, 7L, 500_000));      // user 1 là người bán phiên 7
+        assertEquals(ErrorCode.SELLER_CANNOT_BID, ex.getCode());
+        assertTrue(bidStore.isEmpty());
+    }
+
+    @Test
+    void firstBidBelowStartingPriceIsRejected() {
+        DomainException ex = assertThrows(DomainException.class,
+                () -> service.placeBid(5L, 7L, 499_999));
+        assertEquals(ErrorCode.BID_TOO_LOW, ex.getCode());
+    }
+
+    @Test
+    void secondBidExactlyAtMinimumIsAccepted() {
+        service.placeBid(5L, 7L, 500_000);
+        Bid bid = service.placeBid(6L, 7L, 550_000);           // 500000 + bước giá 50000
+        assertEquals(550_000, bid.amount());
+        assertEquals(6L, auctionStore.get(7L).getHighestBidderId());
+        assertEquals(2, bidStore.size());
+    }
+
+    @Test
+    void listBidsOfUnknownAuctionIsRejected() {
+        DomainException ex = assertThrows(DomainException.class,
+                () -> service.listByAuction(99L));
         assertEquals(ErrorCode.AUCTION_NOT_FOUND, ex.getCode());
     }
 }
