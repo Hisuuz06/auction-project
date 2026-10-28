@@ -1,0 +1,601 @@
+openapi: 3.0.3
+info:
+  title: Auction System API
+  version: 1.0.0
+  description: |
+    API của hệ thống đấu giá trực tuyến - Phase 1.
+    API được xây dựng theo kiến trúc phân lớp và sử dụng JWT Bearer Authentication
+    cho các endpoint yêu cầu đăng nhập.
+
+servers:
+  - url: http://localhost:8080
+    description: Local development server
+
+tags:
+  - name: Authentication
+    description: Đăng ký và đăng nhập
+  - name: Auctions
+    description: Quản lý và xem phiên đấu giá
+  - name: Bids
+    description: Xem và đặt giá
+  - name: Users
+    description: Thông tin đấu giá đã thắng của người dùng
+
+paths:
+  /api/auth/register:
+    post:
+      tags:
+        - Authentication
+      summary: Đăng ký tài khoản
+      description: Tạo tài khoản người dùng mới.
+      operationId: register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+            example:
+              username: hieu123
+              password: password123
+      responses:
+        '201':
+          description: Đăng ký thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserResponse'
+              example:
+                id: 1
+                username: hieu123
+        '400':
+          description: Dữ liệu đầu vào không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Tên đăng nhập đã tồn tại
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auth/login:
+    post:
+      tags:
+        - Authentication
+      summary: Đăng nhập
+      description: Xác thực tài khoản và nhận JWT Bearer token.
+      operationId: login
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+            example:
+              username: hieu123
+              password: password123
+      responses:
+        '200':
+          description: Đăng nhập thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+              example:
+                token: eyJhbGciOiJIUzI1NiJ9...
+                tokenType: Bearer
+                expiresIn: 3600
+        '400':
+          description: Dữ liệu đầu vào không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Sai tên đăng nhập hoặc mật khẩu
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auctions:
+    get:
+      tags:
+        - Auctions
+      summary: Lấy danh sách phiên đấu giá
+      description: Trả về danh sách phiên đấu giá theo thứ tự mới nhất trước.
+      operationId: listAuctions
+      responses:
+        '200':
+          description: Danh sách phiên đấu giá
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuctionResponse'
+
+    post:
+      tags:
+        - Auctions
+      summary: Tạo phiên đấu giá
+      description: Người dùng đã đăng nhập tạo một phiên đấu giá mới.
+      operationId: createAuction
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAuctionRequest'
+            example:
+              name: iPhone 15 Pro
+              description: Điện thoại đã qua sử dụng, tình trạng tốt
+              startingPrice: 15000000
+              minIncrement: 500000
+              endTime: '2026-11-01T15:00:00Z'
+      responses:
+        '201':
+          description: Tạo phiên đấu giá thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuctionResponse'
+        '400':
+          description: Dữ liệu không hợp lệ hoặc thời gian kết thúc không ở tương lai
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Thiếu hoặc sai JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auctions/{id}:
+    get:
+      tags:
+        - Auctions
+      summary: Lấy thông tin một phiên đấu giá
+      operationId: getAuction
+      parameters:
+        - $ref: '#/components/parameters/AuctionId'
+      responses:
+        '200':
+          description: Thông tin phiên đấu giá
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuctionResponse'
+        '404':
+          description: Không tìm thấy phiên đấu giá
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    delete:
+      tags:
+        - Auctions
+      summary: Xóa phiên đấu giá
+      description: Chỉ người bán của phiên mới có thể xóa. Phiên đã có bid hoặc đã kết thúc không thể xóa.
+      operationId: deleteAuction
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AuctionId'
+      responses:
+        '204':
+          description: Xóa thành công
+        '400':
+          description: Phiên đã kết thúc
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Thiếu hoặc sai JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Người yêu cầu không phải người bán
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Không tìm thấy phiên đấu giá
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Phiên đã có bid
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/auctions/{auctionId}/bids:
+    get:
+      tags:
+        - Bids
+      summary: Lấy lịch sử đặt giá
+      description: Trả về các bid của phiên theo amount giảm dần. Endpoint này công khai.
+      operationId: listBids
+      parameters:
+        - $ref: '#/components/parameters/AuctionPathId'
+      responses:
+        '200':
+          description: Danh sách bid
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/BidResponse'
+        '404':
+          description: Không tìm thấy phiên đấu giá
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+    post:
+      tags:
+        - Bids
+      summary: Đặt giá
+      description: Người dùng đã đăng nhập đặt giá cho một phiên đấu giá.
+      operationId: placeBid
+      security:
+        - bearerAuth: []
+      parameters:
+        - $ref: '#/components/parameters/AuctionPathId'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PlaceBidRequest'
+            example:
+              amount: 15500000
+      responses:
+        '201':
+          description: Đặt giá thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BidResponse'
+        '400':
+          description: Dữ liệu đặt giá không hợp lệ
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Thiếu hoặc sai JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '403':
+          description: Người bán không được đặt giá phiên của mình
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Không tìm thấy phiên đấu giá
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Phiên đã kết thúc hoặc giá đặt quá thấp
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/users/me/won-auctions:
+    get:
+      tags:
+        - Users
+      summary: Lấy các phiên đấu giá người dùng đã thắng
+      description: Trả về các phiên đã kết thúc mà người dùng hiện tại là người đặt giá cao nhất.
+      operationId: getWonAuctions
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Danh sách phiên đấu giá đã thắng
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AuctionResponse'
+        '401':
+          description: Thiếu hoặc sai JWT token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Nhập JWT token theo dạng Bearer <token>.
+
+  parameters:
+    AuctionId:
+      name: id
+      in: path
+      required: true
+      description: ID của phiên đấu giá
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+
+    AuctionPathId:
+      name: auctionId
+      in: path
+      required: true
+      description: ID của phiên đấu giá
+      schema:
+        type: integer
+        format: int64
+        minimum: 1
+
+  schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 30
+          description: Tên đăng nhập, từ 3 đến 30 ký tự.
+          example: hieu123
+        password:
+          type: string
+          minLength: 8
+          format: password
+          description: Mật khẩu tối thiểu 8 ký tự.
+          example: password123
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          description: Tên đăng nhập.
+          example: hieu123
+        password:
+          type: string
+          format: password
+          description: Mật khẩu.
+          example: password123
+
+    LoginResponse:
+      type: object
+      required:
+        - token
+        - tokenType
+        - expiresIn
+      properties:
+        token:
+          type: string
+          description: JWT access token.
+          example: eyJhbGciOiJIUzI1NiJ9...
+        tokenType:
+          type: string
+          description: Loại token.
+          example: Bearer
+        expiresIn:
+          type: integer
+          format: int64
+          description: Thời gian token có hiệu lực, tính bằng giây.
+          example: 3600
+
+    UserResponse:
+      type: object
+      required:
+        - id
+        - username
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        username:
+          type: string
+          example: hieu123
+
+    CreateAuctionRequest:
+      type: object
+      required:
+        - name
+        - startingPrice
+        - minIncrement
+        - endTime
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Tên phiên đấu giá.
+          example: iPhone 15 Pro
+        description:
+          type: string
+          nullable: true
+          description: Mô tả sản phẩm.
+          example: Điện thoại đã qua sử dụng, tình trạng tốt
+        startingPrice:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Giá khởi điểm (VND).
+          example: 15000000
+        minIncrement:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Bước giá tối thiểu (VND).
+          example: 500000
+        endTime:
+          type: string
+          format: date-time
+          description: Thời gian kết thúc, phải lớn hơn thời gian hiện tại.
+          example: '2026-11-01T15:00:00Z'
+
+    PlaceBidRequest:
+      type: object
+      required:
+        - amount
+      properties:
+        amount:
+          type: integer
+          format: int64
+          minimum: 1
+          description: Giá đặt (VND).
+          example: 15500000
+
+    AuctionResponse:
+      type: object
+      required:
+        - id
+        - sellerId
+        - name
+        - startingPrice
+        - minIncrement
+        - currentPrice
+        - endTime
+        - status
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        sellerId:
+          type: integer
+          format: int64
+          example: 2
+        name:
+          type: string
+          example: iPhone 15 Pro
+        description:
+          type: string
+          nullable: true
+          example: Điện thoại đã qua sử dụng, tình trạng tốt
+        startingPrice:
+          type: integer
+          format: int64
+          example: 15000000
+        minIncrement:
+          type: integer
+          format: int64
+          example: 500000
+        currentPrice:
+          type: integer
+          format: int64
+          example: 16000000
+        highestBidderId:
+          type: integer
+          format: int64
+          nullable: true
+          example: 3
+        endTime:
+          type: string
+          format: date-time
+          example: '2026-11-01T15:00:00Z'
+        status:
+          type: string
+          enum:
+            - ACTIVE
+            - ENDED
+          example: ACTIVE
+
+    BidResponse:
+      type: object
+      required:
+        - id
+        - auctionId
+        - bidderId
+        - amount
+        - createdAt
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 10
+        auctionId:
+          type: integer
+          format: int64
+          example: 1
+        bidderId:
+          type: integer
+          format: int64
+          example: 3
+        amount:
+          type: integer
+          format: int64
+          example: 15500000
+        createdAt:
+          type: string
+          format: date-time
+          example: '2026-10-27T12:30:00Z'
+
+    ErrorResponse:
+      type: object
+      required:
+        - timestamp
+        - status
+        - code
+        - message
+        - path
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+          example: '2026-10-27T12:30:00Z'
+        status:
+          type: integer
+          example: 400
+        code:
+          type: string
+          enum:
+            - VALIDATION_ERROR
+            - UNAUTHORIZED
+            - INVALID_CREDENTIALS
+            - FORBIDDEN
+            - SELLER_CANNOT_BID
+            - AUCTION_NOT_FOUND
+            - USER_ALREADY_EXISTS
+            - AUCTION_HAS_BIDS
+            - AUCTION_ENDED
+            - BID_TOO_LOW
+          example: VALIDATION_ERROR
+        message:
+          type: string
+          example: Dữ liệu không hợp lệ
+        path:
+          type: string
+          example: /api/auctions
