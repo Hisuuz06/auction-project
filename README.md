@@ -209,7 +209,6 @@ cho thấy dấu hiệu Race Condition khi xử lý các request đồng thời.
 
 **Kết luận:** Hệ thống đáp ứng ổn định các mức tải đã thử nghiệm
 nhưng còn tồn tại vấn đề về tính nhất quán khi đặt giá đồng thời.
-Kết quả được sử dụng làm baseline cho Pha 2.
 
 ## 9. Hạn chế và hướng Pha 2
 
@@ -230,5 +229,5 @@ Kết quả được sử dụng làm baseline cho Pha 2.
 | Họ tên            | Phụ trách                                                    |
 |-------------------|--------------------------------------------------------------|
 | Nguyễn Ngọc Thắng | Xác thực, JWT, test                                          |
-| Đào Trung Hiếu    | Phiên đấu giá, README (chạy, kiểm thử)                       |
+| Đào Trung Hiếu    | Phiên đấu giá, test, README (chạy, kiểm thử kaggle)          |
 | Lê Trung Hiếu     | Đặt giá, Swagger, Docker, test, README (kiến trúc, ERD, API) |
