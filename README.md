@@ -129,16 +129,19 @@ docker compose up -d --build
 ```
 
 - Swagger UI: http://localhost:8080/swagger-ui.html
-- Có thể nạp dữ liệu mẫu (3 tài khoản `seller1`, `buyer1`, `buyer2`, mật khẩu `Passw0rd!`, và các phiên mẫu): [ĐIỀN: cách bật, ví dụ `SPRING_PROFILES_ACTIVE=seed docker compose up -d --build`]. Đây chỉ là tài khoản thử.
-- Dùng endpoint cần đăng nhập trên Swagger: gọi `POST /api/auth/login`, copy `token`, bấm **Authorize** và dán token (không gõ chữ `Bearer`).
+- Khi mới chạy, cơ sở dữ liệu **trống**. Thử nhanh trên Swagger:
+    1. `POST /api/auth/register` tạo hai tài khoản, ví dụ `seller1` và `buyer1` (mật khẩu từ 8 ký tự).
+    2. `POST /api/auth/login` với `seller1`, copy `token`, bấm **Authorize** và dán token (không gõ chữ `Bearer`).
+    3. `POST /api/auctions` để tạo một phiên.
+    4. Đăng nhập `buyer1`, bấm **Authorize** lại (Logout rồi dán token mới), rồi `POST /api/auctions/{id}/bids` để đặt giá.
 - Dừng: `docker compose down` (thêm `-v` để xóa dữ liệu).
 
 Chạy test: `mvn clean verify` (cần JDK 17).
 
 ## 7. Kiểm thử
 
-- **Test tự động:** [ĐIỀN: số] test gồm luật đặt giá (`BidServiceTest`), phiên đấu giá, xác thực, test controller (`@WebMvcTest`) và test kiểm tra phân tầng.
-- **Kịch bản chạy tay trên Swagger:** [ĐIỀN: số] kịch bản, tất cả đạt (đặt giá hợp lệ, giá quá thấp, người bán tự đặt giá, phiên đã kết thúc, không token, token sai...). [ĐIỀN: link tới bảng kịch bản nếu có]
+- **Test tự động:** Gồm luật đặt giá (`BidServiceTest`), phiên đấu giá, xác thực, test controller (`@WebMvcTest`) và test kiểm tra phân tầng.
+- **Kịch bản chạy tay trên Swagger:** Tất cả đạt (đặt giá hợp lệ, giá quá thấp, người bán tự đặt giá, phiên đã kết thúc, không token, token sai...).
 
 ## 8. Kiểm thử tải (Kaggle CPU)
 
@@ -164,15 +167,22 @@ Nhận xét: [ĐIỀN: 2-3 câu, ví dụ endpoint nào chậm nhất và vì sa
 
 ## 9. Hạn chế và hướng Pha 2
 
-- **Xử lý đồng thời khi đặt giá:** chưa có khóa nên hai người đặt cùng lúc có thể cùng qua kiểm tra. [ĐIỀN: bằng chứng từ kiểm tra dữ liệu sau khi tải, nếu có]
+- **Xử lý đồng thời khi đặt giá:** chưa có khóa nên hai người đặt cùng lúc có thể cùng qua kiểm tra.
 - **`GET /api/auctions` trả toàn bộ danh sách** (chưa phân trang), chậm khi dữ liệu lớn.
 - **Truy vấn theo người dùng** (`won-auctions`) chưa có index phù hợp.
-- Hướng cải tiến: [ĐIỀN: ví dụ khóa lạc quan, phân trang, cache, index] và đánh giá trước/sau trên cùng cấu hình Kaggle.
+- Hướng cải tiến:
+
+| Vấn đề | Thuộc tính | Cải tiến | Chỉ số đo trước và sau |
+|---|---|---|---|
+| Đặt giá đồng thời | Nhất quán dữ liệu | Khóa lạc quan (`@Version`) kèm thử lại | Số phiên lệch giá và bid trùng giá (mong đợi 0); thông lượng đặt giá |
+| Danh sách không phân trang | Hiệu năng | Phân trang `page`, `size` | p95 và kích thước response của `GET /api/auctions` |
+| Đọc nhiều, xuống DB mọi lần | Hiệu năng, mở rộng | Cache chi tiết phiên, xóa khi có bid mới | RPS và p95 của các `GET` |
+| Thiếu chỉ mục kết hợp | Hiệu năng | Chỉ mục cho `won-auctions` và lịch sử bid | p95 của hai endpoint đó |
 
 ## 10. Thành viên
 
-| Họ tên | Phụ trách |
-|---|---|
-| [ĐIỀN] | Xác thực, JWT, Docker, kiểm thử tải |
-| [ĐIỀN] | Phiên đấu giá, README (kiến trúc, ERD, API) |
-| [ĐIỀN] | Đặt giá, Swagger, test, README (chạy, kiểm thử) |
+| Họ tên            | Phụ trách                                                    |
+|-------------------|--------------------------------------------------------------|
+| Nguyễn Ngọc Thắng | Xác thực, JWT, test                                          |
+| Đào Trung Hiếu    | Phiên đấu giá, README (chạy, kiểm thử)                       |
+| Lê Trung Hiếu     | Đặt giá, Swagger, Docker, test, README (kiến trúc, ERD, API) |
