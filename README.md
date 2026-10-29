@@ -195,9 +195,10 @@ Kết quả tại mức tải **50 người dùng ảo**:
 | POST /api/auctions | 127,38 | 28,49 | 45 | 0% |
 | POST /api/auctions/{id}/bids | 119,97 | 52,82 | 97 | 0% |
 
-RPS: request/giây; 
-TB: độ trễ trung bình; 
-p95: ngưỡng thời gian phản hồi mà 95% request không vượt quá. 
+chú thích
+- RPS: request/giây; 
+- TB: độ trễ trung bình; 
+- p95: ngưỡng thời gian phản hồi mà 95% request không vượt quá. 
 
 Tổng cộng ba bài kiểm thử tải thông thường thực hiện
 **40.940 request**, không ghi nhận request thất bại theo Locust.
