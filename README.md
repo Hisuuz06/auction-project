@@ -201,9 +201,6 @@ chú thích
 - TB: độ trễ trung bình; 
 - p95: ngưỡng thời gian phản hồi mà 95% request không vượt quá. 
 
-Tổng cộng ba bài kiểm thử tải thông thường thực hiện
-**40.940 request**, không ghi nhận request thất bại theo Locust.
-
 Nhóm thực hiện thêm kiểm thử nhiều người dùng đồng thời đặt cùng một mức giá
 trên một phiên đấu giá. Theo quy tắc nghiệp vụ, tối đa một lượt đặt giá
 ở mức giá đó được chấp nhận.
