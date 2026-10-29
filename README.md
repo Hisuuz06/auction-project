@@ -167,73 +167,9 @@ Chạy test: `mvn clean verify` (cần JDK 17).
 
 ## 8. Kiểm thử tải (Kaggle CPU)
 
-Notebook:https://www.kaggle.com/code/hieukid/ki-m-t-i-u-gi. Chạy toàn bộ trên một notebook Kaggle để cấu hình phần cứng cố định; app và công cụ tải dùng chung CPU.
+Notebook:https://www.kaggle.com/code/hieukid/ki-m-t-i-u-gi. 
+Chạy toàn bộ trên một notebook Kaggle để cấu hình phần cứng cố định; app và công cụ tải dùng chung CPU.
 Tài liệu chi tiết kết quả kiểm thử kaggle : https://docs.google.com/document/d/1TcPU92MZsRa75RKD6NCUSbC3Xl_WioaLVe7TkliPzOo/edit?usp=sharing
-
-### 8.1. Môi trường kiểm thử
-
-Nhóm sử dụng Locust để kiểm thử tải các REST API trên môi trường Kaggle CPU.
-
-| Thông số | Giá trị |
-|---|---|
-| Phần cứng | Intel Xeon 2.20 GHz, 4 CPU logic, RAM 31 GiB |
-| Công nghệ | Java 17, Spring Boot 3.3.5, MySQL 8 |
-| Công cụ | Locust (Python) |
-| Dữ liệu | 100 phiên đấu giá mẫu cho GET; dữ liệu thử nghiệm riêng cho POST |
-| Mức tải | 10, 30, 50 người dùng ảo |
-| Thời gian | Warm-up 15 giây, đo 60 giây/mức tải |
-
-Spring Boot, MySQL và Locust chạy trên cùng môi trường Kaggle CPU.
-
-### 8.2. Kết quả kiểm thử Baseline
-
-Kết quả tại mức tải **50 người dùng ảo**:
-
-| API | RPS | Avg (ms) | p95 (ms) | Error Rate |
-|---|---:|---:|---:|---:|
-| GET /api/auctions | 32,33 | 4,15 | 6 | 0% |
-| GET /api/auctions/{id} | 98,64 | 3,81 | 5 | 0% |
-| POST /api/auctions | 127,38 | 28,49 | 45 | 0% |
-| POST /api/auctions/{id}/bids | 119,97 | 52,82 | 97 | 0% |
-
-chú thích
-- RPS: request/giây; 
-- TB: độ trễ trung bình; 
-- p95: ngưỡng thời gian phản hồi mà 95% request không vượt quá. 
-
-Nhóm thực hiện thêm kiểm thử nhiều người dùng đồng thời đặt cùng một mức giá
-trên một phiên đấu giá. Theo quy tắc nghiệp vụ, tối đa một lượt đặt giá
-ở mức giá đó được chấp nhận.
-
-| Người dùng đồng thời | Số vòng kiểm thử | Số bid được chấp nhận mỗi vòng | Vòng vi phạm |
-|---|---:|---:|---:|
-| 10 | 5 | 2 | 5/5 |
-| 30 | 5 | 2–3 | 5/5 |
-| 50 | 5 | 2 | 5/5 |
-| **Tổng** | **15** | | **15/15** |
-
-**Kết quả:** Cả 15/15 vòng kiểm thử đều vi phạm bất biến nghiệp vụ.
-Hệ thống chấp nhận nhiều lượt đặt giá cùng mức giá trên một phiên,
-cho thấy dấu hiệu Race Condition khi xử lý các request đồng thời.
-
-### 8.3. Nhận xét và đánh giá
-
-- **Hiệu năng:** Thông lượng tăng khi số người dùng tăng từ 10 lên 50.
-  Hệ thống đáp ứng ổn định trong phạm vi tải đã kiểm thử.
-- **API GET:** Thời gian phản hồi thấp, trung bình dưới 5 ms.
-  GET chi tiết có RPS cao hơn do được gọi nhiều hơn trong kịch bản.
-- **API POST:** POST Bid có thời gian phản hồi cao nhất (52,82 ms),
-  liên quan đến xử lý nghiệp vụ và cập nhật dữ liệu.
-- **Độ ổn định:** Tỷ lệ request thất bại theo Locust là 0%
-  trong các bài kiểm thử tải thông thường.
-- **Race Condition:** Kiểm thử đặt giá đồng thời phát hiện 15/15 vòng
-  vi phạm bất biến nghiệp vụ, có trường hợp 2–3 bid cùng giá
-  được chấp nhận.
-- **Hướng cải tiến:** Nghiên cứu Optimistic/Pessimistic Locking,
-  kiểm thử lại và so sánh hiệu năng trước–sau.
-
-**Kết luận:** Hệ thống đáp ứng ổn định các mức tải đã thử nghiệm
-nhưng còn tồn tại vấn đề về tính nhất quán khi đặt giá đồng thời.
 
 ## 9. Hạn chế và hướng cải tiến ở pha 2
 ### 9.1 Hạn chế
