@@ -246,10 +246,11 @@ nhưng còn tồn tại vấn đề về tính nhất quán khi đặt giá đ�
 
 | Vấn đề | Thuộc tính | Cải tiến | Chỉ số đo trước và sau |
 |---|---|---|---|
-| Đặt giá đồng thời | Nhất quán dữ liệu | Khóa lạc quan (`@Version`) kèm thử lại | Số phiên lệch giá và bid trùng giá (mong đợi 0); thông lượng đặt giá |
+| Đặt giá đồng thời | Nhất quán dữ liệu | Khóa lạc quan (`@Version`) hoặc Pessimistic Locking | Số phiên lệch giá và bid trùng giá (mong đợi 0); thông lượng đặt giá |
 | Danh sách không phân trang | Hiệu năng | Phân trang `page`, `size` | p95 và kích thước response của `GET /api/auctions` |
 | Đọc nhiều, xuống DB mọi lần | Hiệu năng, mở rộng | Cache chi tiết phiên, xóa khi có bid mới | RPS và p95 của các `GET` |
 | Thiếu chỉ mục kết hợp | Hiệu năng | Chỉ mục cho `won-auctions` và lịch sử bid | p95 của hai endpoint đó |
+|Chưa cập nhật giá theo thời gian thực | Hiệu năng, khả năng mở rộng, khả năng sử dụng | WebSocket đẩy giá mới và người dẫn đầu tới các client đang theo dõi | Độ trễ cập nhật giá (p95), số kết nối đồng thời, tỷ lệ nhận thông báo thành công
 
 ## 10. Thành viên
 
