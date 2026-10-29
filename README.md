@@ -238,12 +238,12 @@ cho thấy dấu hiệu Race Condition khi xử lý các request đồng thời.
 **Kết luận:** Hệ thống đáp ứng ổn định các mức tải đã thử nghiệm
 nhưng còn tồn tại vấn đề về tính nhất quán khi đặt giá đồng thời.
 
-## 9. Hạn chế và hướng Pha 2
-
+## 9. Hạn chế và hướng cải tiến ở pha 2
+### 9.1 Hạn chế
 - **Xử lý đồng thời khi đặt giá:** chưa có khóa nên hai người đặt cùng lúc có thể cùng qua kiểm tra.
 - **`GET /api/auctions` trả toàn bộ danh sách** (chưa phân trang), chậm khi dữ liệu lớn.
 - **Truy vấn theo người dùng** (`won-auctions`) chưa có index phù hợp.
-- Hướng cải tiến:
+### 9.2 Hướng cải tiến
 
 | Vấn đề | Thuộc tính | Cải tiến | Chỉ số đo trước và sau |
 |---|---|---|---|
