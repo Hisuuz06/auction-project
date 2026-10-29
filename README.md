@@ -168,6 +168,7 @@ Chạy test: `mvn clean verify` (cần JDK 17).
 ## 8. Kiểm thử tải (Kaggle CPU)
 
 Notebook:https://www.kaggle.com/code/hieukid/ki-m-t-i-u-gi. Chạy toàn bộ trên một notebook Kaggle để cấu hình phần cứng cố định; app và công cụ tải dùng chung CPU.
+Tài liệu chi tiết kết quả kiểm thử kaggle : https://docs.google.com/document/d/1TcPU92MZsRa75RKD6NCUSbC3Xl_WioaLVe7TkliPzOo/edit?usp=sharing
 
 ### 8.1. Môi trường kiểm thử
 
