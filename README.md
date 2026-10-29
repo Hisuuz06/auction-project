@@ -194,6 +194,7 @@ Kết quả tại mức tải **50 người dùng ảo**:
 | GET /api/auctions/{id} | 98,64 | 3,81 | 5 | 0% |
 | POST /api/auctions | 127,38 | 28,49 | 45 | 0% |
 | POST /api/auctions/{id}/bids | 119,97 | 52,82 | 97 | 0% |
+
 RPS: request/giây; 
 TB: độ trễ trung bình; 
 p95: ngưỡng thời gian phản hồi mà 95% request không vượt quá. 
