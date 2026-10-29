@@ -167,7 +167,7 @@ Chạy test: `mvn clean verify` (cần JDK 17).
 
 ## 8. Kiểm thử tải (Kaggle CPU)
 
-Notebook:https://www.kaggle.com/code/hieukid/ki-m-t-i-u-gi. 
+Notebook:https://www.kaggle.com/code/hieukid/ki-m-t-i-u-gi.
 Chạy toàn bộ trên một notebook Kaggle để cấu hình phần cứng cố định; app và công cụ tải dùng chung CPU.
 Tài liệu chi tiết kết quả kiểm thử kaggle : https://docs.google.com/document/d/1TcPU92MZsRa75RKD6NCUSbC3Xl_WioaLVe7TkliPzOo/edit?usp=sharing
 
@@ -191,5 +191,5 @@ Tài liệu chi tiết kết quả kiểm thử kaggle : https://docs.google.com
 | Họ tên            | Phụ trách                                                    |
 |-------------------|--------------------------------------------------------------|
 | Nguyễn Ngọc Thắng | Xác thực, JWT, test                                          |
-| Đào Trung Hiếu    | Phiên đấu giá, test, kiểm thử tải kaggle, README (chạy, kiểm thử)          |
+| Đào Trung Hiếu    | Phiên đấu giá, test, kiểm thử tải kaggle, README (chạy, kiểm thử,hướng cải tiến ở pha 2)          |
 | Lê Trung Hiếu     | Đặt giá, Swagger, Docker, test, README (kiến trúc, ERD, API) |
