@@ -49,7 +49,7 @@ Hệ thống không phân chia cố định vai trò người mua và người b
 | Xác thực | JWT (jjwt), mật khẩu băm BCrypt |
 | Tài liệu API | OpenAPI/Swagger (springdoc) |
 | Đóng gói | Docker, docker compose |
-| Kiểm thử | JUnit 5, Mockito; Locust cho kiểm thử tải |
+| Kiểm thử | JUnit 5, Mockito; Locust(kiểm thử tải trên Kaggle CPU) |
 
 ## 3. Kiến trúc
 
