@@ -258,5 +258,5 @@ nhưng còn tồn tại vấn đề về tính nhất quán khi đặt giá đ�
 | Họ tên            | Phụ trách                                                    |
 |-------------------|--------------------------------------------------------------|
 | Nguyễn Ngọc Thắng | Xác thực, JWT, test                                          |
-| Đào Trung Hiếu    | Phiên đấu giá, test, README (chạy, kiểm thử kaggle)          |
+| Đào Trung Hiếu    | Phiên đấu giá, test, kiểm thử tải kaggle, README (chạy, kiểm thử)          |
 | Lê Trung Hiếu     | Đặt giá, Swagger, Docker, test, README (kiến trúc, ERD, API) |
