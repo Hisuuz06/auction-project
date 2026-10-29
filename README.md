@@ -2,9 +2,9 @@
 
 Bài tập lớn môn Kiến trúc phần mềm, **Pha 1**. Nhóm 11.
 
-1. Mô tả bài toán và quy tắc nghiệp vụ của hệ thống
+## 1. Mô tả bài toán và quy tắc nghiệp vụ của hệ thống
 
-1.1. Mô tả bài toán
+### 1.1. Mô tả bài toán
 
 Trong hoạt động mua bán trực tuyến, đấu giá là hình thức cho phép nhiều người mua cạnh tranh để sở hữu một sản phẩm thông qua việc đưa ra các mức giá khác nhau. Người bán thiết lập giá khởi điểm, bước giá tối thiểu và thời hạn đấu giá. Khi phiên kết thúc, người đưa ra mức giá hợp lệ cao nhất sẽ trở thành người thắng.
 
@@ -12,7 +12,7 @@ Nhóm xây dựng hệ thống Backend đấu giá trực tuyến (Online Auctio
 
 Hệ thống không phân chia cố định vai trò người mua và người bán. Một người dùng có thể tạo phiên đấu giá của mình và tham gia đặt giá ở các phiên do người khác tạo.
 
-1.2. Chức năng và quy tắc nghiệp vụ
+### 1.2. Chức năng và quy tắc nghiệp vụ
 
 Các chức năng chính:
 
