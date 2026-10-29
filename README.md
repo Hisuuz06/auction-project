@@ -2,21 +2,43 @@
 
 Bài tập lớn môn Kiến trúc phần mềm, **Pha 1**. Nhóm 11.
 
-Backend REST cho phép người dùng đăng ký, tạo phiên đấu giá, đặt giá và xem kết quả. Pha 1 chỉ làm chức năng cơ bản, chưa tối ưu. Các điểm nghẽn quan sát được đã được ghi lại ở mục 8 và 9 để cải tiến ở Pha 2.
+1. Mô tả bài toán và quy tắc nghiệp vụ của hệ thống
 
-## 1. Bài toán và phạm vi
+1.1. Mô tả bài toán
 
-Người dùng đã đăng nhập có thể là **người bán** (tạo phiên) hoặc **người mua** (đặt giá) tùy từng phiên, không có role cố định. Khách chưa đăng nhập chỉ xem được danh sách phiên, chi tiết phiên và lịch sử đặt giá.
+Trong hoạt động mua bán trực tuyến, đấu giá là hình thức cho phép nhiều người mua cạnh tranh để sở hữu một sản phẩm thông qua việc đưa ra các mức giá khác nhau. Người bán thiết lập giá khởi điểm, bước giá tối thiểu và thời hạn đấu giá. Khi phiên kết thúc, người đưa ra mức giá hợp lệ cao nhất sẽ trở thành người thắng.
 
-Quy tắc nghiệp vụ chính:
+Nhóm xây dựng hệ thống Backend đấu giá trực tuyến (Online Auction Backend) cung cấp các REST API cho phép người dùng đăng ký, đăng nhập, tạo phiên đấu giá, tham gia đặt giá, theo dõi lịch sử và xem kết quả đấu giá.
 
-- Giá đặt đầu tiên phải từ giá khởi điểm; các lượt sau phải từ `giá hiện tại + bước giá`.
-- Chỉ đặt giá được khi phiên còn hạn; người bán không được đặt giá phiên của mình.
-- Chỉ người bán mới xóa được phiên, và chỉ khi phiên chưa có lượt đặt giá nào.
-- Trạng thái phiên (`ACTIVE`/`ENDED`) không lưu trong DB mà suy ra từ `end_time`.
-- Người thắng là người dẫn đầu của phiên đã kết thúc.
+Hệ thống không phân chia cố định vai trò người mua và người bán. Một người dùng có thể tạo phiên đấu giá của mình và tham gia đặt giá ở các phiên do người khác tạo.
 
-Ngoài phạm vi Pha 1: thanh toán, upload ảnh, phân trang, xử lý đồng thời.
+1.2. Chức năng và quy tắc nghiệp vụ
+
+Các chức năng chính:
+
+Quản lý tài khoản: Đăng ký, đăng nhập và xác thực người dùng.
+
+Quản lý phiên đấu giá: Tạo, xem danh sách, xem chi tiết và xóa phiên khi đủ điều kiện.
+
+Đặt giá: Người dùng đã đăng nhập có thể tham gia đặt giá trong các phiên của người khác.
+
+Lịch sử đấu giá: Xem danh sách các lượt đặt giá của từng phiên.
+
+Kết quả đấu giá: Xác định người thắng khi phiên kết thúc.
+
+Các quy tắc nghiệp vụ:
+
+Khách chưa đăng nhập chỉ được xem danh sách, chi tiết và lịch sử đặt giá.
+
+Giá đặt đầu tiên phải lớn hơn hoặc bằng giá khởi điểm. Các lượt tiếp theo phải lớn hơn hoặc bằng giá hiện tại + bước giá tối thiểu.
+
+Chỉ được đặt giá khi phiên còn thời hạn và người bán không được đặt giá trong phiên của mình.
+
+Chỉ chủ phiên mới được xóa phiên và chỉ khi chưa có lượt đặt giá nào.
+
+Trạng thái ACTIVE hoặc ENDED được xác định dựa trên endTime, không lưu trực tiếp trong cơ sở dữ liệu.
+
+Người thắng là người dẫn đầu khi phiên kết thúc. Nếu không có lượt đặt giá nào thì phiên không có người thắng.
 
 ## 2. Công nghệ
 
