@@ -14,7 +14,7 @@ Hệ thống không phân chia cố định vai trò người mua và người b
 
 ### 1.2. Chức năng và quy tắc nghiệp vụ
 
-- Các chức năng chính:
+#### 1.2.1 Các chức năng chính:
 
 + Quản lý tài khoản: Đăng ký, đăng nhập và xác thực người dùng.
 
@@ -26,7 +26,7 @@ Hệ thống không phân chia cố định vai trò người mua và người b
 
 + Kết quả đấu giá: Xác định người thắng khi phiên kết thúc.
 
-- Các quy tắc nghiệp vụ:
+#### Các quy tắc nghiệp vụ:
 
 + Khách chưa đăng nhập chỉ được xem danh sách, chi tiết và lịch sử đặt giá.
 
