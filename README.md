@@ -26,7 +26,7 @@ Hệ thống không phân chia cố định vai trò người mua và người b
 
 + Kết quả đấu giá: Xác định người thắng khi phiên kết thúc.
 
-#### Các quy tắc nghiệp vụ:
+#### 1.2.2 Các quy tắc nghiệp vụ:
 
 + Khách chưa đăng nhập chỉ được xem danh sách, chi tiết và lịch sử đặt giá.
 
