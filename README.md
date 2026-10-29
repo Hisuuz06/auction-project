@@ -14,31 +14,31 @@ Hệ thống không phân chia cố định vai trò người mua và người b
 
 ### 1.2. Chức năng và quy tắc nghiệp vụ
 
-Các chức năng chính:
+- Các chức năng chính:
 
-Quản lý tài khoản: Đăng ký, đăng nhập và xác thực người dùng.
++ Quản lý tài khoản: Đăng ký, đăng nhập và xác thực người dùng.
 
-Quản lý phiên đấu giá: Tạo, xem danh sách, xem chi tiết và xóa phiên khi đủ điều kiện.
++ Quản lý phiên đấu giá: Tạo, xem danh sách, xem chi tiết và xóa phiên khi đủ điều kiện.
 
-Đặt giá: Người dùng đã đăng nhập có thể tham gia đặt giá trong các phiên của người khác.
++ Đặt giá: Người dùng đã đăng nhập có thể tham gia đặt giá trong các phiên của người khác.
 
-Lịch sử đấu giá: Xem danh sách các lượt đặt giá của từng phiên.
++ Lịch sử đấu giá: Xem danh sách các lượt đặt giá của từng phiên.
 
-Kết quả đấu giá: Xác định người thắng khi phiên kết thúc.
++ Kết quả đấu giá: Xác định người thắng khi phiên kết thúc.
 
-Các quy tắc nghiệp vụ:
+- Các quy tắc nghiệp vụ:
 
-Khách chưa đăng nhập chỉ được xem danh sách, chi tiết và lịch sử đặt giá.
++ Khách chưa đăng nhập chỉ được xem danh sách, chi tiết và lịch sử đặt giá.
 
-Giá đặt đầu tiên phải lớn hơn hoặc bằng giá khởi điểm. Các lượt tiếp theo phải lớn hơn hoặc bằng giá hiện tại + bước giá tối thiểu.
++ Giá đặt đầu tiên phải lớn hơn hoặc bằng giá khởi điểm. Các lượt tiếp theo phải lớn hơn hoặc bằng giá hiện tại + bước giá tối thiểu.
 
-Chỉ được đặt giá khi phiên còn thời hạn và người bán không được đặt giá trong phiên của mình.
++ Chỉ được đặt giá khi phiên còn thời hạn và người bán không được đặt giá trong phiên của mình.
 
-Chỉ chủ phiên mới được xóa phiên và chỉ khi chưa có lượt đặt giá nào.
++ Chỉ chủ phiên mới được xóa phiên và chỉ khi chưa có lượt đặt giá nào.
 
-Trạng thái ACTIVE hoặc ENDED được xác định dựa trên endTime, không lưu trực tiếp trong cơ sở dữ liệu.
++ Trạng thái ACTIVE hoặc ENDED được xác định dựa trên endTime, không lưu trực tiếp trong cơ sở dữ liệu.
 
-Người thắng là người dẫn đầu khi phiên kết thúc. Nếu không có lượt đặt giá nào thì phiên không có người thắng.
++ Người thắng là người dẫn đầu khi phiên kết thúc. Nếu không có lượt đặt giá nào thì phiên không có người thắng.
 
 ## 2. Công nghệ
 
